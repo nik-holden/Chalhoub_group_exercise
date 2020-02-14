@@ -1,6 +1,9 @@
+#!/usr/bin/env python3
+
 import reddit_api
 
 def main():
+    print("main.py calling reddit")
     reddit_api.record_extraction()
 
 if __name__ == '__main__':

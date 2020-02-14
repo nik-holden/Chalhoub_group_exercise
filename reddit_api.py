@@ -14,21 +14,27 @@ import logging
 from datetime import datetime
 from datetime import date
 import time
+import os
 
 #packages requiring an install
 from google.cloud import bigquery #Used to access GC BigQuery
 import praw #Python reddit API wrapper (PRAW)
 
-#Configure logging
-LOG_FORMAT = '%(levelname)s, %(asctime)s, %(message)s'
-logging.basicConfig(filename = 'redditapi.log', level=logging.INFO, format=LOG_FORMAT)
-logger = logging.getLogger()
-
 #General variables
-
 extract_ts = datetime.now() #Date-time of record extraction
 extract_date = date.today() #Date of record extraction
 limit = 10 #Limit of records
+path = os.path.dirname(__file__) #path of py file
+
+#Configure logging
+LOG_FORMAT = '%(levelname)s, %(asctime)s, %(message)s'
+logging.basicConfig(filename = '{path}/redditapi.log'.format(path=path), level=logging.INFO, format=LOG_FORMAT)
+logger = logging.getLogger()
+
+
+file = "constant-racer-267008-eab473065348.json"
+file_loc = "{path}/{file}".format(path=path, file=file) #format variables named for clarity
+
 def record_extraction():
     #Start of program
     logger.info("Program has started.")
@@ -40,11 +46,10 @@ def record_extraction():
     filtered_subreddit = subreddit.top('month', limit=limit) #Apply filter for top submissions
 
     #Create a GC BigQuery object
-    client = bigquery.Client.from_service_account_json("C:/Python/chal-cbq-b350ab7026d3.json") #this will need to be removed when py app de
-
+    client = bigquery.Client.from_service_account_json(file_loc)
     #Dataset and table within GC BQ to insert records into
-    datasetid = "new_dataset4"
-    table_name = "test_tbl_2"
+    datasetid = "chalhoub_exercise"
+    table_name = "subreddit_daily_top_10"
 
     table_id = "{}.{}.{}".format(client.project, datasetid, table_name)
 
@@ -89,3 +94,5 @@ def record_extraction():
     #end of program
     prog_end = datetime.now()
     logger.info("Program has ended. {} records out of {} were written. Run time was {}".format(w-1, limit, prog_end - prog_start))
+
+#record_extraction()
