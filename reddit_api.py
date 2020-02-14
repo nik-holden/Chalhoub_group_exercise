@@ -26,6 +26,7 @@ extract_date = date.today() #Date of record extraction
 limit = 10 #Limit of records
 path = os.path.dirname(__file__) #path of py file
 
+
 #Configure logging
 LOG_FORMAT = '%(levelname)s, %(asctime)s, %(message)s'
 logging.basicConfig(filename = '{path}/redditapi.log'.format(path=path), level=logging.INFO, format=LOG_FORMAT)
