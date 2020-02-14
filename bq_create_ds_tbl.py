@@ -1,21 +1,44 @@
 from google.cloud import bigquery
-project_id = 'constant-racer-267008'
+import os
 
-client = bigquery.Client.from_service_account_json("C:/GitHub/Chalhoub_group_exercise/constant-racer-267008-eab473065348.json")
-def create_dataset(dataset_name):
-    dataset_id = "{}.{}".format(client.project, dataset_name)
+# Construct a BigQuery client object
+path = os.path.dirname(__file__) #path of py file
+file = "constant-racer-267008-eab473065348.json"  # Service key file used for athentication
+file_loc = "{path}/{file}".format(path=path, file=file)  # concatinated file location and name
+client = bigquery.Client.from_service_account_json(file_loc)  # Create bigquery client object
 
-    dataset = bigquery.Dataset(dataset_id)
+# Global variable
+project_id = client.project  # Get the project ID based on the authenticated session
 
-    dataset.location="US"
 
-    dataset = client.create_dataset(dataset)
-    print("Created dataset {}.{}".format(client.project, dataset.dataset_id))
 
-#create_dataset("new_dataset4")
+def create_dataset(ds_name):
+    datasets = list(client.list_datasets())  # Get datasets already part of a project
+    dataset_list = []  # Create an empty list
 
-def create_table(datasetid, table_name):
-    table_id = "{}.{}.{}".format(client.project, datasetid, table_name)
+    # Append individual data sets to the empty list
+    for dataset in datasets:
+        dataset_list.append(dataset.dataset_id)
+
+    # Check if dataset to  be created already exists and create it if it doesn't
+    if ds_name not in dataset_list:
+        print("{} does not exist. Creating now".format(ds_name))
+        ds_id = "{}.{}".format(project_id, ds_name)
+
+        dataset = bigquery.Dataset(ds_id)
+
+        dataset.location="US"
+
+        dataset = client.create_dataset(dataset)
+        print("Created dataset {}.{}".format(project_id, dataset.dataset_id))
+    else:
+        print("Dataset {} exists".format(ds_name))
+
+
+def create_table(ds_name, table_name):
+    tables = list(client.list_tables(ds_name))  # Get tables part of a dataset
+    table_list = []
+    table_id = "{}.{}.{}".format(project_id, ds_name, table_name)
 
     schema = [
         bigquery.SchemaField("record_key", "STRING", mode="REQUIRED", description="Key for record"),
@@ -31,21 +54,13 @@ def create_table(datasetid, table_name):
         bigquery.SchemaField("extract_ts", "TIMESTAMP", mode="NULLABLE", description="Date-time the record was extracted"),
     ]
 
-    table = bigquery.Table(table_id, schema=schema)
-    table = client.create_table(table)  # Make an API request.
-    print(
-        "Created table {}.{}.{}".format(table.project, table.dataset_id, table.table_id)
-    )
+    for table in tables:
+        table_list.append(table.table_id)
 
-
-create_dataset("chalhoub_exercise")
-
-create_table("chalhoub_exercise","subreddit_daily_top_10")
-
-'''table_id = "{}.{}.{}".format(client.project, "new_dataset4","test_tbl_3")
-
-schema = [
-    bigquery.SchemaField("name", "STRING")
-]
-table = bigquery.Table(table_id, schema=schema)
-table = client.create_table(table)'''
+    if table_name not in table_list:
+        print("{table_name} is not part of the {ds_name} dataset.  Creating it now".format(table_name=table_name, ds_name=ds_name))
+        table = bigquery.Table(table_id, schema=schema)
+        table = client.create_table(table)  # Make an API request.
+        print("Created table {}.{}.{}".format(table.project, table.dataset_id, table.table_id))
+    else:
+        print("{} exists".format(table_name))

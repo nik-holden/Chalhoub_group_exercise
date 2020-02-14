@@ -2,10 +2,13 @@
 #!/usr/bin/python
 
 import reddit_api
+import sys
 
-def main():
+def main(datasetid, table_name):
     print("main.py calling reddit")
-    reddit_api.record_extraction()
+    reddit_api.record_extraction(datasetid, table_name)
 
 if __name__ == '__main__':
-    main()
+    datasetid = sys.argv[1]
+    table_name = sys.argv[2]
+    main(datasetid, table_name)
