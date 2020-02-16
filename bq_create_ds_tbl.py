@@ -64,3 +64,5 @@ def create_table(ds_name, table_name):
         print("Created table {}.{}.{}".format(table.project, table.dataset_id, table.table_id))
     else:
         print("{} exists".format(table_name))
+
+create_table("chalhoub_exercise", "subreddit_daily_top_10")
