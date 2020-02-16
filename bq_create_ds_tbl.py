@@ -13,6 +13,9 @@ project_id = client.project  # Get the project ID based on the authenticated ses
 
 
 def create_dataset(ds_name):
+    """create_dataset function creates a dataset in Google Cloud BigQuery under a certain project instace.
+    This function takes one argument: The name of the dataset. THe project instance ID is obtain from the authentication credentials"""
+    
     datasets = list(client.list_datasets())  # Get datasets already part of a project
     dataset_list = []  # Create an empty list
 
@@ -36,6 +39,8 @@ def create_dataset(ds_name):
 
 
 def create_table(ds_name, table_name):
+    """create_table function creates a table on Google Cloud BigQuery for a specified dataset under a specific project instance.
+    This function takes 2 argumens: the dataset name and the table name to be created.  The project instance is obtains with the auth credentials"""
     tables = list(client.list_tables(ds_name))  # Get tables part of a dataset
     table_list = []
     table_id = "{}.{}.{}".format(project_id, ds_name, table_name)
