@@ -38,6 +38,8 @@ file = "constant-racer-267008-eab473065348.json"
 file_loc = "{path}/{file}".format(path=path, file=file) #format variables named for clarity
 
 def record_extraction(datasetid, table_name):
+    """record_extraction extracts a specified number of records from a specified subreddit"""
+    
     #Start of program
     logger.info("Program has started.")
     prog_start = datetime.now()
@@ -104,4 +106,4 @@ def record_extraction(datasetid, table_name):
         prog_end = datetime.now()
         logger.info("Program has ended. {} records out of {} were written. Run time was {}".format(w-1, limit, prog_end - prog_start))
 
-record_extraction("chalhoub_exercise", "subreddit_daily_top_10")
+#record_extraction("chalhoub_exercise", "subreddit_daily_top_10")
